@@ -88,7 +88,7 @@ section{padding:8rem 4rem;position:relative;z-index:1}
 .dest-marquee-wrap.reverse .dest-marquee{animation-direction:reverse;animation-duration:30s}
 .dest-card-m{width:200px;height:280px;border-radius:16px;overflow:hidden;position:relative;flex-shrink:0;cursor:none;transition:transform 0.4s}
 .dest-card-m:hover{transform:scale(1.04) translateY(-4px)}
-@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-50%)}}
+@keyframes marquee{from{transform:translateX(0)}to{transform:translateX(-25%)}}
 .dest-card-d{border-radius:16px;overflow:hidden;aspect-ratio:3/4;position:relative;cursor:none;transition:transform 0.4s}
 .dest-card-d:hover{transform:scale(1.04) translateY(-4px)}
 .dest-card-bg{position:absolute;inset:0;background-size:cover;background-position:center}
@@ -610,7 +610,8 @@ function makeDestCard(city, flag, type, bg){
 }
 
 function buildMarquee(items, reverse){
-  const cards = [...items, ...items].map(it => makeDestCard(it.city, it.flag, it.type, it.bg)).join('');
+  // Repeat cards 4 times to ensure full coverage at any screen width
+  const cards = [...items,...items,...items,...items].map(it => makeDestCard(it.city, it.flag, it.type, it.bg)).join('');
   return `<div class="dest-marquee-wrap${reverse?' reverse':''}"><div class="dest-marquee">${cards}</div></div>`;
 }
 
