@@ -584,23 +584,25 @@ function renderStats(pkgs,statsData){
 }
 
 const PLACEHOLDER_DESTS=[
-  {city:'Istanbul',country:'🇹🇷 Turqi',type:'City Break',color:'linear-gradient(160deg,#7c3aed,#c026d3)'},
-  {city:'Santorini',country:'🇬🇷 Greqi',type:'Plazh & Relaks',color:'linear-gradient(160deg,#0369a1,#06b6d4)'},
-  {city:'Roma',country:'🇮🇹 Itali',type:'Kulturë & Histori',color:'linear-gradient(160deg,#b45309,#d97706)'},
-  {city:'Dubai',country:'🇦🇪 Emirate',type:'Luksoz & Modern',color:'linear-gradient(160deg,#059669,#10b981)'},
-  {city:'Barcelona',country:'🇪🇸 Spanjë',type:'Arte & Gastronomia',color:'linear-gradient(160deg,#dc2626,#f97316)'},
-  {city:'Paris',country:'🇫🇷 Francë',type:'Romantike',color:'linear-gradient(160deg,#1d4ed8,#6366f1)'},
-  {city:'Tokyo',country:'🇯🇵 Japoni',type:'Futuriste',color:'linear-gradient(160deg,#0f766e,#14b8a6)'},
-  {city:'Maldive',country:'🇲🇻 Maldive',type:'Paradis',color:'linear-gradient(160deg,#7c2d12,#c2410c)'},
+  {city:'Istanbul',country:'Turqi',flag:'🇹🇷',type:'City Break',color:'linear-gradient(160deg,#7c3aed,#c026d3)'},
+  {city:'Santorini',country:'Greqi',flag:'🇬🇷',type:'Plazh & Relaks',color:'linear-gradient(160deg,#0369a1,#06b6d4)'},
+  {city:'Roma',country:'Itali',flag:'🇮🇹',type:'Kulturë & Histori',color:'linear-gradient(160deg,#b45309,#d97706)'},
+  {city:'Dubai',country:'Emirate',flag:'🇦🇪',type:'Luksoz & Modern',color:'linear-gradient(160deg,#059669,#10b981)'},
+  {city:'Barcelona',country:'Spanjë',flag:'🇪🇸',type:'Arte & Gastronomia',color:'linear-gradient(160deg,#dc2626,#f97316)'},
+  {city:'Paris',country:'Francë',flag:'🇫🇷',type:'Romantike',color:'linear-gradient(160deg,#1d4ed8,#6366f1)'},
+  {city:'Tokyo',country:'Japoni',flag:'🇯🇵',type:'Futuriste',color:'linear-gradient(160deg,#0f766e,#14b8a6)'},
+  {city:'Maldive',country:'Maldive',flag:'🇲🇻',type:'Paradis',color:'linear-gradient(160deg,#7c2d12,#c2410c)'},
+  {city:'Tbilisi',country:'Gjeorgji',flag:'🇬🇪',type:'Aventurë',color:'linear-gradient(160deg,#1d4ed8,#3b82f6)'},
+  {city:'Dubrovnik',country:'Kroaci',flag:'🇭🇷',type:'Adriatik',color:'linear-gradient(160deg,#0c4a6e,#0369a1)'},
 ];
 
-function makeDestCard(city, country, type, bg, i){
+function makeDestCard(city, flag, type, bg){
   return `<div class="dest-card-m">
     <div style="position:absolute;inset:0;${bg}"></div>
-    ${bg.includes('url')?'':`<div style="position:absolute;inset:0;opacity:0.07;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:20px 20px"></div>`}
+    ${!bg.includes('url')?`<div style="position:absolute;inset:0;opacity:0.07;background-image:radial-gradient(circle,#fff 1px,transparent 1px);background-size:20px 20px"></div>`:''}
     <div style="position:absolute;inset:0;background:linear-gradient(to top,rgba(0,0,0,0.85) 0%,transparent 55%)"></div>
     <div style="position:absolute;bottom:0;left:0;right:0;padding:1rem">
-      <div style="font-size:1.6rem;margin-bottom:0.2rem">${extractFlag(country)}</div>
+      <div style="font-size:1.6rem;margin-bottom:0.2rem">${flag}</div>
       <div style="font-family:'Playfair Display',serif;font-size:1.15rem;font-weight:700">${city}</div>
       <div style="font-size:0.68rem;color:rgba(255,255,255,0.6);text-transform:uppercase;letter-spacing:0.1em">${type}</div>
     </div>
@@ -608,8 +610,7 @@ function makeDestCard(city, country, type, bg, i){
 }
 
 function buildMarquee(items, reverse){
-  // Duplicate items for seamless loop
-  const cards = [...items, ...items].map((it, i) => makeDestCard(it.city, it.country, it.type, it.bg, i)).join('');
+  const cards = [...items, ...items].map(it => makeDestCard(it.city, it.flag, it.type, it.bg)).join('');
   return `<div class="dest-marquee-wrap${reverse?' reverse':''}"><div class="dest-marquee">${cards}</div></div>`;
 }
 
@@ -618,19 +619,16 @@ function renderDestinations(pkgs){
   let row1, row2;
 
   if(!pkgs.length){
-    // Use placeholders split into 2 rows
     const half = Math.ceil(PLACEHOLDER_DESTS.length/2);
-    row1 = PLACEHOLDER_DESTS.slice(0,half).map(p=>({city:p.city,country:p.country,type:p.type,bg:`background:${p.color}`}));
-    row2 = PLACEHOLDER_DESTS.slice(half).map(p=>({city:p.city,country:p.country,type:p.type,bg:`background:${p.color}`}));
+    row1 = PLACEHOLDER_DESTS.slice(0,half).map(p=>({city:p.city,flag:p.flag,type:p.type,bg:`background:${p.color}`}));
+    row2 = PLACEHOLDER_DESTS.slice(half).map(p=>({city:p.city,flag:p.flag,type:p.type,bg:`background:${p.color}`}));
   } else {
-    // Use real packages — split into 2 rows, use package images if available
     const items = pkgs.map((p,i)=>({
       city:p.city,
-      country:p.country,
+      flag: extractFlag(p.country),
       type:p.nights||'Disponueshëm',
       bg: p.image_url ? `background-image:url('${p.image_url}');background-size:cover;background-position:center` : `background:${destColors[i%destColors.length]}`
     }));
-    // If few packages, duplicate into 2 rows
     const half = Math.ceil(items.length/2)||1;
     row1 = items.slice(0, half).length ? items.slice(0, half) : items;
     row2 = items.slice(half).length ? items.slice(half) : [...items].reverse();
